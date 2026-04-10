@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="theme-color" content="#0b0624" />
 <title>PACK MASTER QUEST — The Raipur Wedding Saga</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +28,10 @@
     --shadow-hard:   4px 4px 0 #000;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * {
+    margin: 0; padding: 0; box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
 
   html, body {
     height: 100%;
@@ -36,6 +42,19 @@
     overflow: hidden;
     -webkit-font-smoothing: none;
     image-rendering: pixelated;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: manipulation;
+    overscroll-behavior: none;
+  }
+
+  /* Allow scrolling inside lists/grids */
+  .item-list, .map-grid, .character-row {
+    touch-action: pan-y;
+  }
+
+  button, .btn, .char-card, .quest-node, .item-row, .mute-btn, .reset-link {
+    touch-action: manipulation;
   }
 
   body {
@@ -707,11 +726,234 @@
     margin-top: 18px;
   }
 
+  /* ============================================
+     MOBILE — touch devices & phones
+     ============================================ */
+
+  /* Disable stuck :hover states on touch devices */
+  @media (hover: none) {
+    .btn:hover:not(:disabled),
+    .btn-secondary:hover:not(:disabled),
+    .char-card:hover,
+    .quest-node:hover,
+    .item-row:hover,
+    .mute-btn:hover,
+    .reset-link:hover {
+      transform: none;
+      box-shadow: var(--shadow-hard);
+    }
+    .btn:hover:not(:disabled)          { background: var(--accent-pink); color: var(--ink); }
+    .btn-secondary:hover:not(:disabled){ background: var(--accent-cyan); color: #000; }
+    .btn-danger:hover:not(:disabled)   { background: var(--accent-red); }
+    .char-card:hover                   { background: var(--bg-panel-2); border-color: var(--border-dark); }
+    .char-card.selected                { border-color: var(--accent-gold); box-shadow: 6px 6px 0 var(--accent-pink); }
+    .quest-node:hover                  { border-color: var(--border-dark); }
+    .quest-node.complete               { border-color: var(--accent-green); }
+    .item-row:hover                    { border-color: var(--border-dark); }
+    .item-row.checked                  { border-color: var(--accent-green); }
+    .reset-link:hover                  { color: var(--ink-dim); }
+    .mute-btn:hover                    { border-color: var(--border-dark); color: var(--ink-dim); }
+  }
+
+  /* Press-down feedback for tappable items (works on touch) */
+  @media (hover: none) {
+    .btn:active:not(:disabled) { background: var(--accent-gold); color: #000; transform: translate(2px, 2px); box-shadow: 2px 2px 0 #000; }
+    .char-card:active          { border-color: var(--accent-gold); background: var(--bg-panel); }
+    .quest-node:active         { border-color: var(--accent-gold); }
+    .item-row:active           { border-color: var(--accent-cyan); }
+  }
+
+  /* Phones (portrait) */
   @media (max-width: 720px) {
-    .map-grid { grid-template-columns: repeat(2, 1fr); }
-    .character-row { gap: 10px; }
-    .char-card { width: 150px; padding: 12px 8px; }
-    .char-sprite { font-size: 56px; }
+    html, body { font-size: 18px; }
+
+    body {
+      align-items: stretch;
+      justify-content: stretch;
+    }
+
+    #game {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      border-width: 2px;
+      box-shadow:
+        0 0 0 2px #000,
+        0 0 0 4px var(--border-dark);
+    }
+
+    .screen {
+      padding: calc(12px + env(safe-area-inset-top)) 12px calc(12px + env(safe-area-inset-bottom));
+    }
+
+    /* Title screen */
+    .title-art   { font-size: 70px; margin-bottom: 10px; }
+    .title-main  { font-size: 24px; line-height: 1.3; margin-bottom: 6px; }
+    .title-sub   { font-size: 10px; margin-bottom: 18px; }
+    .press-start { font-size: 11px; margin-top: 10px; }
+    .credits     { font-size: 15px; line-height: 1.5; margin-top: 14px; padding: 0 8px; }
+
+    /* Character select */
+    #character-screen { gap: 10px; padding-top: calc(18px + env(safe-area-inset-top)); }
+    .panel-title { font-size: 13px; }
+    .panel-sub   { font-size: 15px; margin-bottom: 4px; }
+    .character-row {
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      max-height: 62vh;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .char-card {
+      width: 100%;
+      max-width: 340px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-align: left;
+      padding: 12px 14px;
+    }
+    .char-sprite { font-size: 48px; flex-shrink: 0; }
+    .char-card > div:not(.char-sprite) { flex: 1; min-width: 0; }
+    .char-name  { font-size: 10px; margin: 0 0 4px; }
+    .char-class { font-size: 15px; line-height: 1.25; }
+    .char-bonus { font-size: 12px; margin-top: 4px; }
+
+    /* Buttons — larger tap targets */
+    .btn {
+      font-size: 11px;
+      padding: 14px 18px;
+      min-height: 48px;
+    }
+    .button-row { margin-top: 14px; }
+
+    /* HUD */
+    #hud {
+      padding: 8px 10px;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .hud-avatar      { font-size: 30px; }
+    .hud-name        { font-size: 8px; }
+    .hud-level       { font-size: 7px; }
+    .hud-right-label { font-size: 7px; }
+    .hud-right-val   { font-size: 11px; }
+    .bar-label       { font-size: 7px; }
+
+    /* Map */
+    #map-screen { padding: calc(12px + env(safe-area-inset-top)) 10px calc(12px + env(safe-area-inset-bottom)); }
+    .map-header { margin-bottom: 8px; }
+    .map-title  { font-size: 12px; }
+    .map-sub    { font-size: 13px; }
+    .map-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .quest-node {
+      min-height: 108px;
+      padding: 12px 8px;
+    }
+    .quest-icon     { font-size: 34px; }
+    .quest-name     { font-size: 7px; line-height: 1.5; }
+    .quest-progress { font-size: 14px; }
+    .route-banner   { font-size: 12px; padding: 6px 10px; margin-top: 8px; letter-spacing: 0; }
+
+    /* Quest detail */
+    #quest-screen { padding: calc(12px + env(safe-area-inset-top)) 10px calc(12px + env(safe-area-inset-bottom)); }
+    .quest-header { gap: 8px; margin-bottom: 8px; }
+    .quest-title-icon   { font-size: 28px; }
+    .quest-title-text h2{ font-size: 10px; line-height: 1.3; }
+    .quest-title-text p { font-size: 13px; margin-top: 3px; }
+    .dialogue-box {
+      font-size: 15px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+    .item-list { gap: 5px; padding: 4px 4px 4px 2px; }
+    .item-row {
+      padding: 12px 10px;
+      gap: 10px;
+      border-width: 2px;
+    }
+    .check-box  { width: 26px; height: 26px; font-size: 18px; }
+    .item-icon  { font-size: 22px; width: 26px; }
+    .item-label { font-size: 16px; line-height: 1.25; }
+    .item-tag   { font-size: 11px; padding: 2px 5px; }
+    .quest-bar       { height: 22px; }
+    .quest-bar-label { font-size: 8px; }
+
+    /* Victory */
+    .victory-art   { font-size: 78px; }
+    .victory-title { font-size: 16px; margin: 10px 0 4px; line-height: 1.3; }
+    .victory-sub   { font-size: 16px; padding: 0 10px; }
+    .victory-stats {
+      font-size: 15px;
+      min-width: 0;
+      width: calc(100% - 20px);
+      max-width: 340px;
+      padding: 12px 16px;
+      line-height: 1.5;
+    }
+    .victory-fine   { font-size: 13px; }
+    .victory-footer { font-size: 16px; }
+
+    /* Toast */
+    #toast {
+      padding: 14px 22px;
+      min-width: 220px;
+      max-width: calc(100% - 32px);
+    }
+    .toast-title { font-size: 11px; }
+    .toast-body  { font-size: 15px; }
+    .toast-icon  { font-size: 32px; }
+
+    /* Corner UI */
+    .reset-link {
+      font-size: 11px;
+      bottom: calc(4px + env(safe-area-inset-bottom));
+      right: 6px;
+    }
+    .mute-btn {
+      font-size: 10px;
+      padding: 4px 6px;
+      top: calc(6px + env(safe-area-inset-top));
+      right: 8px;
+    }
+  }
+
+  /* Narrow phones (~<= 360px, S21 FE fits here when rotated) */
+  @media (max-width: 380px) {
+    .map-grid    { gap: 8px; }
+    .quest-node  { min-height: 100px; padding: 10px 6px; }
+    .quest-icon  { font-size: 30px; }
+    .title-main  { font-size: 20px; }
+    .item-label  { font-size: 15px; }
+    .dialogue-box{ font-size: 14px; }
+  }
+
+  /* Landscape phones — shrink vertical elements */
+  @media (max-width: 900px) and (orientation: landscape) and (max-height: 500px) {
+    .title-art   { font-size: 44px; margin-bottom: 4px; }
+    .title-main  { font-size: 18px; margin-bottom: 4px; }
+    .title-sub   { margin-bottom: 8px; }
+    .credits     { margin-top: 8px; font-size: 13px; }
+    .press-start { margin-top: 6px; }
+    .character-row {
+      flex-direction: row;
+      max-height: none;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+    }
+    .char-card   { width: 180px; flex-shrink: 0; padding: 10px; }
+    .char-sprite { font-size: 40px; }
+    .map-grid    { grid-template-columns: repeat(4, 1fr); }
+    .quest-node  { min-height: 90px; }
+    .quest-icon  { font-size: 26px; }
+    .route-banner{ margin-top: 6px; padding: 5px 8px; }
   }
 </style>
 </head>
@@ -1378,7 +1620,8 @@ function buildVictoryScreen() {
 /* ===== STARS ===== */
 function initStars() {
   const container = document.getElementById('stars');
-  for (let i = 0; i < 50; i++) {
+  const count = window.innerWidth < 720 ? 22 : 50;
+  for (let i = 0; i < count; i++) {
     const s = el('div', {
       cls: 'star',
       style: {
